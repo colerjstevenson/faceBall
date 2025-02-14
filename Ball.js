@@ -26,8 +26,10 @@ class Ball{
   }
   
   show(){
+    push();
+    imageMode(CENTER);
     image(ball_img, this.x, this.y, this.size, this.size);  
-    
+    pop();
   }
   
   hit(kp1, kp2){

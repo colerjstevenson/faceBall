@@ -1,4 +1,72 @@
 
+class Target {
+  constructor(x, y, w, h, col, message, value) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.col = col;
+    this.message = message;
+    this.originalY = y;
+    this.animationProgress = 0;
+    this.bouncing = false;
+    this.value = value
+  }
+
+  show() {
+    push(); // Save current drawing state
+    fill(this.col);
+    rect(this.x, this.y - this.h, this.w, this.h*2, 10); // Draw rectangle with rounded corners
+    
+    fill(255); // Set text color (white for contrast)
+    textAlign(CENTER, CENTER);
+    
+    let textSizeFactor = min(this.w / (this.message.length * 0.6), this.h * 0.6); // Adjust text size
+    textSize(textSizeFactor);
+    
+    text(this.message, this.x + this.w / 2, this.y + this.h / 2);
+    pop(); // Restore previous drawing state
+  }
+
+  triggerBounce() {
+    if (!this.bouncing) {
+      this.bouncing = true;
+      this.animationProgress = 0;
+    }
+  }
+
+  update() {
+    if (this.bouncing) {
+      this.animationProgress += 0.1;
+      this.y = this.originalY + sin(this.animationProgress * PI) * 10;
+      
+      if (this.animationProgress >= 1) {
+        this.bouncing = false;
+        this.y = this.originalY;
+      }
+    }
+  }
+  
+  run(){
+    this.update();
+    this.hit();
+    this.show();
+    
+  }
+  
+  hit(){
+    if (
+      ball.x + ball.vx > this.x &&
+      ball.x + ball.vx < this.x + this.w &&
+      ball.y + ball.vy > this.y &&
+      ball.y + ball.vy < this.y + this.h
+    ) {
+         this.triggerBounce();
+         ball.vy = ball.vy * -1;
+    }
+    
+  }
+}
 
 class Zone{
   
@@ -14,9 +82,9 @@ class Zone{
   hit(){
     if (
       ball.x + ball.size + ball.vx > this.x &&
-      ball.x - ball.size + ball.vx < this.x + this.w &&
+      ball.x + ball.vx < this.x + this.w &&
       ball.y + ball.size + ball.vy > this.y &&
-      ball.y - ball.size + ball.vy < this.y + this.h
+      ball.y + ball.vy < this.y + this.h
     ) {
          //state = 'strike'
          return;
@@ -74,10 +142,10 @@ class Box{
 
     // Check if the ball's next position is inside the box
     if (
-      ball.x + ball.size/2 + ball.vx > this.x &&
-      ball.x - ball.size/2 + ball.vx < this.x + this.w &&
+      ball.x + ball.size + ball.vx > this.x &&
+      ball.x + ball.vx < this.x + this.w &&
       ball.y + ball.size/2 + ball.vy > this.y &&
-      ball.y - ball.size/2 + ball.vy < this.y + this.h
+      ball.y + ball.vy < this.y + this.h
     ) {
       // Determine which side of the box the ball is colliding with
       let prevX = ball.x - ball.vx;

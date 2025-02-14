@@ -26,7 +26,10 @@ class Glove{
   
   
   show(){
+    push();
+    imageMode(CENTER);
     image(glove_img, this.x, this.y, this.size, this.size);
+    pop();
   }
   
   move(){

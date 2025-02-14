@@ -25,6 +25,8 @@ let box_r;
 let state;
 let strikes;
 
+let targets = [];
+
 function preload() {
   faceMesh = ml5.faceMesh(options);
   field_img = loadImage('field.jpg');
@@ -44,6 +46,8 @@ function setup() {
   
   append(gloves, new Glove(random(width), 350));
   append(gloves, new Glove(random(width), 270));
+  
+  append(targets, new Target(0, 0, width, 30, 'blue', 'Single'));
   
   box_l = new Box(0, height-height/zh, width/zw, height/zh);
   box_r = new Box((width/zw)*2, height-height/zh, width/zw, height/zh);
@@ -71,6 +75,9 @@ function draw() {
   box_r.run();
   
  
+   for(let target of targets){
+      target.run();  
+    } 
   
   
   if(state == 'run'){
@@ -94,36 +101,3 @@ function draw() {
     }
     
   }
-
-
-function draw_face(){
-  // draw the faces' bounding boxes
-  for (let j = 0; j < faces.length; j++) {
-    let face = faces[0];
-
-    strokeWeight(20);
-    
-    // draw the left eye
-    stroke(255, 255, 0);
-    
-    let keypoint1 = face.leftEye.keypoints[0];
-    let kp1 = {x: keypoint1.x, y: offset + keypoint1.y-bar_offset};  
-    
-    
-    // draw the right eye
-    stroke(255, 0, 0);
-    
-    let keypoint2 = face.rightEye.keypoints[0];
-    let kp2 = {x: keypoint2.x, y: offset + keypoint2.y-bar_offset};
-    
-    
-    line(kp1.x, kp1.y, kp2.x, kp2.y);
-    
-    ball.hit(kp1, kp2);
-  }
-  
-}
-
-function gotFaces(results) {
-  faces = results;
-}
